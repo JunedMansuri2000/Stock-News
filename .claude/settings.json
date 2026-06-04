@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST http://localhost:3000/api/news/sync)",
+      "Bash(curl -s http://localhost:3000/api/news/sync/status)"
+    ]
+  }
+}
