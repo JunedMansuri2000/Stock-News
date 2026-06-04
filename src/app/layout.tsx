@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Stock News",
-  description: "Real-time Indian stock market news from MoneyControl and NewsAPI",
+  title: "StockNews — Nifty 100 Live Data & News",
+  description: "Live Nifty 100 stock market data, charts, and financial news",
 };
 
 export default function RootLayout({
@@ -30,6 +30,12 @@ export default function RootLayout({
               className="text-sm text-gray-600 hover:text-gray-900"
             >
               News
+            </a>
+            <a
+              href="/stocks"
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Stocks
             </a>
           </div>
         </nav>

@@ -40,3 +40,5 @@ next-env.d.ts
 # prisma
 *.db
 *.db-journal
+src/generated/
+scripts/.venv/

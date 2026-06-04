@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
+  output        = "../src/generated/prisma-client"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -34,6 +35,75 @@ model SyncLog {
   articlesFetched Int       @default(0)
   articlesCreated Int       @default(0)
   errorMessage    String?
+
+  @@index([startedAt])
+  @@index([status])
+}
+
+model Stock {
+  id            String    @id @default(cuid())
+  symbol        String    @unique
+  companyName   String
+  sector        String?
+  currentPrice  Float?
+  marketCap     Float?
+  peRatio       Float?
+  pbRatio       Float?
+  dividendYield Float?
+  dayHigh       Float?
+  dayLow        Float?
+  week52High    Float?
+  week52Low     Float?
+  volume        BigInt?
+  changePercent Float?
+  sparklineData Float[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  history    StockHistory[]
+  indicators TechnicalIndicator?
+
+  @@index([symbol])
+  @@index([changePercent])
+  @@index([marketCap])
+}
+
+model StockHistory {
+  id        String   @id @default(cuid())
+  symbol    String
+  price     Float
+  volume    BigInt?
+  timestamp DateTime
+
+  stock Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@unique([symbol, timestamp])
+  @@index([symbol])
+  @@index([timestamp])
+}
+
+model TechnicalIndicator {
+  id         String   @id @default(cuid())
+  symbol     String   @unique
+  sma20      Float?
+  sma50      Float?
+  sma200     Float?
+  rsi        Float?
+  macd       Float?
+  macdSignal Float?
+  macdHist   Float?
+  updatedAt  DateTime @updatedAt
+
+  stock Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+}
+
+model StockSyncLog {
+  id            String    @id @default(cuid())
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  status        String    // "running" | "success" | "failed"
+  stocksUpdated Int       @default(0)
+  errorMessage  String?
 
   @@index([startedAt])
   @@index([status])

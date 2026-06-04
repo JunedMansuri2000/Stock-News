@@ -1,4 +1,5 @@
 import { DashboardWidgets } from "@/components/DashboardWidgets";
+import { StockDashboardWidgets } from "@/components/stocks/StockDashboardWidgets";
 import { prisma } from "@/lib/prisma";
 import { NewsCard } from "@/components/NewsCard";
 import Link from "next/link";
@@ -23,8 +24,19 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Sync widgets — client component, polls /api/news/sync/status */}
+      {/* News sync widgets */}
       <DashboardWidgets />
+
+      {/* Stock market widgets */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Stock Market</h2>
+          <Link href="/stocks" className="text-sm text-blue-600 hover:text-blue-800">
+            View all stocks →
+          </Link>
+        </div>
+        <StockDashboardWidgets />
+      </div>
 
       {/* Recent articles preview */}
       <div>

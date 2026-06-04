@@ -1,0 +1,33 @@
+# Runs every 10 minutes — syncs Nifty 100 stock data from Yahoo Finance.
+# Requires secrets:
+#   DATABASE_URL  — PostgreSQL connection string
+name: Stock Sync
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run stock sync
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scripts/stock_sync.py
