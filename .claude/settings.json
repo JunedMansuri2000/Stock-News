@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(curl -s -X POST http://localhost:3000/api/news/sync)",
-      "Bash(curl -s http://localhost:3000/api/news/sync/status)"
+      "Bash(curl -s http://localhost:3000/api/news/sync/status)",
+      "Bash(npx tsc *)",
+      "Bash(DATABASE_URL=\"postgresql://dummy:dummy@localhost/dummy\" npm run build)",
+      "Bash(DATABASE_URL=\"\" node -e \"require\\('./src/lib/prisma'\\)\")",
+      "Bash(DATABASE_URL='' node -e ' *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
