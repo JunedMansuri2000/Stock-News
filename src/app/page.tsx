@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { NewsCard } from "@/components/NewsCard";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 // Revalidate every 60 s so the server-rendered article count stays fresh
 export const revalidate = 60;
 
