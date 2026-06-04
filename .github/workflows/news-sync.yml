@@ -1,5 +1,5 @@
-# GitHub Actions cron — runs every 10 minutes
-# Set APP_URL and SYNC_SECRET in repo Settings → Secrets → Actions
+# Runs every 10 minutes — free alternative to Vercel Pro crons.
+# Set APP_URL in repo Settings → Secrets → Actions (e.g. https://your-app.vercel.app)
 name: News Sync
 
 on:
@@ -15,10 +15,9 @@ jobs:
       - name: Trigger sync
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -X POST "${{ secrets.APP_URL }}/api/news/sync" \
-            -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}")
+            -X POST "${{ secrets.APP_URL }}/api/news/sync")
           echo "HTTP status: $STATUS"
           if [ "$STATUS" != "200" ] && [ "$STATUS" != "409" ]; then
-            echo "Sync request failed with status $STATUS"
+            echo "Sync failed with status $STATUS"
             exit 1
           fi
