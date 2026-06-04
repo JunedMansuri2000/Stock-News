@@ -1,13 +1,37 @@
 import { DashboardWidgets } from "@/components/DashboardWidgets";
 import { StockDashboardWidgets } from "@/components/stocks/StockDashboardWidgets";
+import {
+  TopSwingTradesWidget,
+  TopBreakoutsWidget,
+  HighVolumeWidget,
+  HighMomentumWidget,
+  HighVolatilityWidget,
+} from "@/components/stocks/OpportunityWidgets";
 import { prisma } from "@/lib/prisma";
 import { NewsCard } from "@/components/NewsCard";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
-
-// Revalidate every 60 s so the server-rendered article count stays fresh
 export const revalidate = 60;
+
+function WidgetSkeleton() {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-4 animate-pulse">
+      <div className="h-4 bg-gray-100 rounded w-1/2 mb-4" />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center gap-3 py-2.5">
+          <div className="h-3 w-4 bg-gray-100 rounded" />
+          <div className="flex-1 space-y-1">
+            <div className="h-3 bg-gray-100 rounded w-1/3" />
+            <div className="h-2.5 bg-gray-50 rounded w-1/2" />
+          </div>
+          <div className="h-6 w-10 bg-gray-100 rounded-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default async function DashboardPage() {
   const recentArticles = await prisma.article.findMany({
@@ -38,14 +62,48 @@ export default async function DashboardPage() {
         <StockDashboardWidgets />
       </div>
 
+      {/* Swing Trade Opportunities */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Swing Trade Opportunities</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Nifty 100 stocks with highest opportunity scores</p>
+          </div>
+          <Link href="/opportunities" className="text-sm text-emerald-600 hover:text-emerald-800 font-medium">
+            View all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Suspense fallback={<WidgetSkeleton />}>
+            <TopSwingTradesWidget />
+          </Suspense>
+          <Suspense fallback={<WidgetSkeleton />}>
+            <TopBreakoutsWidget />
+          </Suspense>
+        </div>
+      </div>
+
+      {/* Market Analytics */}
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-gray-900">Market Analytics</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Suspense fallback={<WidgetSkeleton />}>
+            <HighVolumeWidget />
+          </Suspense>
+          <Suspense fallback={<WidgetSkeleton />}>
+            <HighMomentumWidget />
+          </Suspense>
+          <Suspense fallback={<WidgetSkeleton />}>
+            <HighVolatilityWidget />
+          </Suspense>
+        </div>
+      </div>
+
       {/* Recent articles preview */}
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Recent Articles</h2>
-          <Link
-            href="/news"
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
+          <Link href="/news" className="text-sm text-blue-600 hover:text-blue-800">
             View all →
           </Link>
         </div>

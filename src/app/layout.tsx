@@ -37,6 +37,12 @@ export default function RootLayout({
             >
               Stocks
             </a>
+            <a
+              href="/opportunities"
+              className="text-sm font-semibold text-emerald-700 hover:text-emerald-900"
+            >
+              Opportunities
+            </a>
           </div>
         </nav>
         <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>

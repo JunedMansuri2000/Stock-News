@@ -11,7 +11,7 @@ generator client {
 
 model Article {
   id          String   @id @default(cuid())
-  externalId  String   @unique // source-prefixed id (napi_*, mc_*)
+  externalId  String   @unique
   title       String
   description String?
   snippet     String?
@@ -31,7 +31,7 @@ model SyncLog {
   id              String    @id @default(cuid())
   startedAt       DateTime  @default(now())
   completedAt     DateTime?
-  status          String    // "running" | "success" | "failed"
+  status          String
   articlesFetched Int       @default(0)
   articlesCreated Int       @default(0)
   errorMessage    String?
@@ -60,8 +60,9 @@ model Stock {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  history    StockHistory[]
-  indicators TechnicalIndicator?
+  history     StockHistory[]
+  indicators  TechnicalIndicator?
+  opportunity StockOpportunity?
 
   @@index([symbol])
   @@index([changePercent])
@@ -83,28 +84,95 @@ model StockHistory {
 }
 
 model TechnicalIndicator {
-  id         String   @id @default(cuid())
-  symbol     String   @unique
-  sma20      Float?
-  sma50      Float?
-  sma200     Float?
-  rsi        Float?
-  macd       Float?
-  macdSignal Float?
-  macdHist   Float?
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(cuid())
+  symbol          String   @unique
+  sma20           Float?
+  sma50           Float?
+  sma200          Float?
+  ema20           Float?
+  rsi             Float?
+  macd            Float?
+  macdSignal      Float?
+  macdHist        Float?
+  bollingerUpper  Float?
+  bollingerMiddle Float?
+  bollingerLower  Float?
+  atr             Float?
+  adx             Float?
+  volumeRs        Float?
+  updatedAt       DateTime @updatedAt
 
   stock Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+}
+
+model StockOpportunity {
+  id               String   @id @default(cuid())
+  symbol           String   @unique
+  opportunityScore Float?
+  direction        String?
+  riskLevel        String?
+  entryZoneLow     Float?
+  entryZoneHigh    Float?
+  stopLoss         Float?
+  target1          Float?
+  target2          Float?
+  holdingPeriod    String?
+  momentumScore    Float?
+  trendScore       Float?
+  volumeScore      Float?
+  volatilityScore  Float?
+  technicalScore   Float?
+  greeksScore      Float?
+  updatedAt        DateTime @updatedAt
+
+  stock Stock @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@index([opportunityScore])
+  @@index([direction])
 }
 
 model StockSyncLog {
   id            String    @id @default(cuid())
   startedAt     DateTime  @default(now())
   completedAt   DateTime?
-  status        String    // "running" | "success" | "failed"
+  status        String
   stocksUpdated Int       @default(0)
   errorMessage  String?
 
   @@index([startedAt])
   @@index([status])
+}
+
+model OptionChain {
+  id          String   @id @default(cuid())
+  symbol      String
+  strike      Float
+  expiry      DateTime
+  callOI      Int?
+  putOI       Int?
+  callVolume  Int?
+  putVolume   Int?
+  callLTP     Float?
+  putLTP      Float?
+  updatedAt   DateTime @updatedAt
+
+  greeks OptionGreeks?
+
+  @@unique([symbol, strike, expiry])
+  @@index([symbol])
+  @@index([expiry])
+}
+
+model OptionGreeks {
+  id                String   @id @default(cuid())
+  optionChainId     String   @unique
+  callDelta         Float?
+  putDelta          Float?
+  gamma             Float?
+  theta             Float?
+  vega              Float?
+  impliedVolatility Float?
+  updatedAt         DateTime @updatedAt
+
+  optionChain OptionChain @relation(fields: [optionChainId], references: [id], onDelete: Cascade)
 }
