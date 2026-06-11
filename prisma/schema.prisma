@@ -176,3 +176,51 @@ model OptionGreeks {
 
   optionChain OptionChain @relation(fields: [optionChainId], references: [id], onDelete: Cascade)
 }
+
+model AIRecommendation {
+  id                  String   @id @default(cuid())
+  symbol              String
+  recommendation      String   // Strong Buy | Buy | Accumulate | Hold | Reduce | Sell | Strong Sell
+  confidenceScore     Float    // 0–100
+  overallScore        Float    // 0–100 weighted composite
+  technicalScore      Float    // 0–40 (40% weight)
+  sentimentScore      Float    // 0–40 (40% weight)
+  momentumScore       Float    // 0–20 (20% weight)
+  bullCase            String
+  bearCase            String
+  risks               String   // JSON array of strings
+  catalysts           String   // JSON array of strings
+  summary             String
+  holdingPeriod       String
+  positiveNewsCount   Int      @default(0)
+  negativeNewsCount   Int      @default(0)
+  neutralNewsCount    Int      @default(0)
+  newsMomentumScore   Float    @default(0)
+  newsConfidenceScore Float    @default(0)
+  aiGenerated         Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  @@index([symbol])
+  @@index([recommendation])
+  @@index([overallScore])
+  @@index([confidenceScore])
+  @@index([createdAt])
+}
+
+model AIRecommendationLog {
+  id                     String    @id @default(cuid())
+  startedAt              DateTime  @default(now())
+  completedAt            DateTime?
+  status                 String    // running | success | failed
+  stocksAnalyzed         Int       @default(0)
+  recommendationsCreated Int       @default(0)
+  aiStocksProcessed      Int       @default(0)
+  aiProvider             String?   // "ollama" | "openai" | "rule-based"
+  modelName              String?   // e.g. "qwen3:8b"
+  generationMs           Int?      // total wall-clock duration
+  batchCount             Int?      // number of AI batch calls made
+  errorMessage           String?
+
+  @@index([startedAt])
+  @@index([status])
+}

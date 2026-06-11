@@ -43,6 +43,12 @@ export default function RootLayout({
             >
               Opportunities
             </a>
+            <a
+              href="/recommendations"
+              className="text-sm font-semibold text-violet-700 hover:text-violet-900"
+            >
+              AI Picks
+            </a>
           </div>
         </nav>
         <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>

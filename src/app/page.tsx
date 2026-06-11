@@ -7,6 +7,10 @@ import {
   HighMomentumWidget,
   HighVolatilityWidget,
 } from "@/components/stocks/OpportunityWidgets";
+import {
+  TopStrongBuyWidget,
+  HighConfidenceWidget,
+} from "@/components/recommendations/RecommendationWidgets";
 import { prisma } from "@/lib/prisma";
 import { NewsCard } from "@/components/NewsCard";
 import Link from "next/link";
@@ -95,6 +99,27 @@ export default async function DashboardPage() {
           </Suspense>
           <Suspense fallback={<WidgetSkeleton />}>
             <HighVolatilityWidget />
+          </Suspense>
+        </div>
+      </div>
+
+      {/* AI Recommendations */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">AI Recommendations</h2>
+            <p className="text-xs text-gray-400 mt-0.5">AI-powered buy/sell picks — top Nifty 100 stocks</p>
+          </div>
+          <Link href="/recommendations" className="text-sm text-violet-600 hover:text-violet-800 font-medium">
+            View all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Suspense fallback={<WidgetSkeleton />}>
+            <TopStrongBuyWidget />
+          </Suspense>
+          <Suspense fallback={<WidgetSkeleton />}>
+            <HighConfidenceWidget />
           </Suspense>
         </div>
       </div>

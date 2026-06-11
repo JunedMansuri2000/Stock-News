@@ -14,6 +14,7 @@ import time
 import logging
 from datetime import datetime, timezone
 from typing import Optional
+from urllib.parse import urlparse, urlencode, parse_qs, urlunparse
 
 import psycopg2
 import psycopg2.extras
@@ -63,11 +64,27 @@ SPARKLINE_DAYS = 30
 
 # ── Database ─────────────────────────────────────────────────────────────────
 
+_PRISMA_PARAMS = {
+    "pgbouncer", "pool_timeout", "connection_limit", "schema",
+    "statement_cache_size", "socket_timeout", "channel_binding",
+}
+
+def _clean_db_url(url: str) -> str:
+    """Strip Prisma/PgBouncer-specific query params that psycopg2 rejects."""
+    parsed = urlparse(url)
+    if not parsed.query:
+        return url
+    filtered = {k: v for k, v in parse_qs(parsed.query, keep_blank_values=True).items()
+                if k.lower() not in _PRISMA_PARAMS}
+    clean_query = urlencode({k: v[0] for k, v in filtered.items()})
+    return urlunparse(parsed._replace(query=clean_query))
+
+
 def get_conn():
     url = os.environ.get("DATABASE_URL", "")
     if not url:
         raise RuntimeError("DATABASE_URL environment variable is not set")
-    return psycopg2.connect(url)
+    return psycopg2.connect(_clean_db_url(url))
 
 
 def ensure_tables(conn):
